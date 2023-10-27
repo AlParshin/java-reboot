@@ -1,11 +1,17 @@
 package ru.sberbank.edu;
 
-// интерфейс можно менять
+import java.io.IOException;
+
+/**
+ * В интерфейсе добавлен способ сохранения в базу данных.
+ * Также в каждый метод добавлены исключения.
+ */
 public interface Statistic {
 
-    int getLineCount();
-    int getSpaceCount();
-    String getLongestLine();
-    void save(int lineCount, int spaceCount, String line);
+    int getLineCount() throws IOException;
+    int getSpaceCount() throws IOException;
+    String getLongestLine() throws IOException;
+    void saveToFile(int lineCount, int spaceCount, String line) throws IOException;
+    void saveToDatabase(int lineCount, int spaceCount, String line);
 
 }
