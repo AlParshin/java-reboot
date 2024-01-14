@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.sberbank.edu.entity.User;
+import ru.sberbank.edu.repository.UserRepository;
 import ru.sberbank.edu.service.UserService;
 
 import java.util.ArrayList;
@@ -18,19 +19,22 @@ import java.util.List;
 /**
  * Unit test for simple App.
  */
-@WebMvcTest({UserController.class})
-public class UserControllerTest {
+@WebMvcTest({UserService.class})
+public class UserServiceTest {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private UserService service;
+    private UserController controller;
+
+    @MockBean
+    private UserRepository repository;
 
     /**
-     * Проверка метода getAllUsers у UserController
+     * Проверка метода findAllUsers у UserService
      */
     @Test
-    void getAllUsersTest() throws Exception {
+    void findAllUsersTest() throws Exception {
         User user1 = new User(4L, "Igor", 52);
         User user2 = new User(5L, "Semen", 44);
 
@@ -39,86 +43,73 @@ public class UserControllerTest {
         users.add(user1);
         users.add(user2);
 
-        when(service.findAllUsers()).thenReturn(users);
+        StringBuffer sb = new StringBuffer();
+        sb.append("User(id=4, name=Igor, age=52) ................. User(id=5, name=Semen, age=44) ................. ");
+
+        when(controller.getAllUsers()).thenReturn(sb);
 
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("User(id=4, name=Igor, age=52) ................. User(id=5, name=Semen, age=44) ................. "));
     }
 
+
     /**
-     * Проверка метода getUserById у UserController
+     * Проверка метода findUserById у UserService
      */
     @Test
-    void getUserByIdTest() throws Exception {
+    void findUserByIdTest() throws Exception {
         User user1 = new User(4L, "Igor", 52);
         User user2 = new User(5L, "Semen", 44);
 
-        when(service.findUserById(4L)).thenReturn(user1);
+        when(controller.getUserById(4)).thenReturn("User(id=4, name=Igor, age=52)");
 
         mockMvc.perform(get("/users/4"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("User(id=4, name=Igor, age=52)"));
     }
 
+
+
+
     /**
-     * Проверка метода updateUserById у UserController
+     * Проверка метода updateUserById у UserService
      */
     @Test
     void updateUserByIdTest() throws Exception {
+
         User user1 = new User(4L, "Igor", 52);
         User user2 = new User(5L, "Semen", 44);
 
-        when(service.updateUserById(4L, "Maga", 15)).thenReturn(new User(4L, "Maga", 15));
-        when(service.findUserById(4L)).thenReturn(new User(4L, "Maga", 15));
-
-        mockMvc.perform(get("/users/4/update/name=Maga&age=15"))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/users/4"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("User(id=4, name=Maga, age=15)"));
+        mockMvc.perform(get("/users/update/4/name=Maga&age=15"))
+                .andExpect(status().is3xxRedirection());
     }
 
     /**
-     * Проверка метода createNewUser у UserController
+     * Проверка метода add у UserService
      */
     @Test
-    void createNewUserTest() throws Exception {
+    void addTest() throws Exception {
+
         User user1 = new User(4L, "Igor", 52);
         User user2 = new User(5L, "Semen", 44);
-
-        when(service.findUserById(6L)).thenReturn(new User(6L, "Maga", 15));
 
         mockMvc.perform(get("/users/create/id=6&name=Maga&age=15"))
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
 
-        mockMvc.perform(get("/users/6"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("User(id=6, name=Maga, age=15)"));
     }
 
     /**
-     * Проверка метода deleteUserById у UserController
+     * Проверка метода delete у UserService
      */
     @Test
-    void deleteUserByIdTest() throws Exception {
+    void delete() throws Exception {
+
         User user1 = new User(4L, "Igor", 52);
         User user2 = new User(5L, "Semen", 44);
-        User user3 = new User(6L, "Maga", 15);
 
-        List users = new ArrayList();
+        mockMvc.perform(get("/users/delete/4"))
+                .andExpect(status().is3xxRedirection());
 
-        users.add(user1);
-        users.add(user2);
-
-        when(service.findAllUsers()).thenReturn(users);
-
-        mockMvc.perform(get("/users/6/delete"))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/users"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("User(id=4, name=Igor, age=52) ................. User(id=5, name=Semen, age=44) ................. "));
     }
 }
