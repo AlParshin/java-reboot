@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres
+    volumes:
+      - /Users/Alex/Downloads/docker/data
+    environment:
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - 8089:5432
+  user-service:
+    image: user_service_image
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+    ports:
+      - 8080:8080
+    depends_on:
+      - db

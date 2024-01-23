@@ -1,0 +1,28 @@
+spring:
+  profiles:
+    active: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+server:
+  port: 8080
+
+logging:
+  level:
+    ru.sberbank.edu: info
+  file:
+    name: userService.log
+    path: ./
+
+service:
+  title: User service Api
+  description: User service description
+  version: 1.0 BETA
